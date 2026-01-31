@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SleepyPaws - Your Cuddly Sleep Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 50%, #A8E6FF 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FFB6D9;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .secondary-btn {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .secondary-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: #D4A5FF;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #FFB6D9 0%, #D4A5FF 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .reminder-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reminder-item.active {
+            border-color: #FFB6D9;
+            background: #FFF0F7;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #FFB6D9;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #D4A5FF;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #FFB6D9 0%, #D4A5FF 100%);
+            height: 100%;
+            transition: width 0.5s;
+        }
+
+        .link-text {
+            color: #D4A5FF;
+            cursor: pointer;
+            text-decoration: underline;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .link-text:hover {
+            color: #FFB6D9;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐻🐼🐱 SleepyPaws</h1>
+            <p>Your cuddly sleep companion</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Screen -->
+            <div id="loginScreen" class="screen active">
+                <h2 style="margin-bottom: 20px; color: #333;">Welcome Back 🐼</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <div class="form-group">
+                    <label>Age Group</label>
+                    <select id="loginAgeGroup">
+                        <option value="child">Child (5-12 years) 🧒</option>
+                        <option value="teen">Teen (13-17 years) 👦</option>
+                        <option value="adult" selected>Adult (18-64 years) 👨</option>
+                        <option value="senior">Senior (65+ years) 👴</option>
+                    </select>
+                </div>
+                <button onclick="login()">Log In</button>
+                <div class="link-text" onclick="showScreen('signupScreen')">Don't have an account? Sign up</div>
+            </div>
+
+            <!-- Signup Screen -->
+            <div id="signupScreen" class="screen">
+                <h2 style="margin-bottom: 20px; color: #333;">Create Account 🐻</h2>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <select id="ageGroup">
+                        <option value="child">Child (5-12 years)</option>
+                        <option value="teen">Teen (13-17 years)</option>
+                        <option value="adult" selected>Adult (18-64 years)</option>
+                        <option value="senior">Senior (65+ years)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sleep Goal (hours)</label>
+                    <input type="number" id="sleepGoal" placeholder="8" min="4" max="12" value="8">
+                </div>
+                <button onclick="signup()">Create Account</button>
+                <div class="link-text" onclick="showScreen('loginScreen')">Already have an account? Log in</div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div id="dashboardScreen" class="screen">
+                <div class="nav-tabs">
+                    <div class="nav-tab active" onclick="showTab('overview')">Overview</div>
+                    <div class="nav-tab" onclick="showTab('reminders')">Reminders</div>
+                    <div class="nav-tab" onclick="showTab('rituals')">Rituals</div>
+                    <div class="nav-tab" onclick="showTab('wellness')">Wellness</div>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="overviewTab" class="tab-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4 id="avgSleep">7.5</h4>
+                            <p>Hours Sleep</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4 id="screenTime">3.2</h4>
+                            <p>Screen Hours</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Today's Sleep Schedule</h3>
+                        <div class="form-group">
+                            <label>Bedtime</label>
+                            <input type="time" id="bedtime" value="22:00">
+                        </div>
+                        <div class="form-group">
+                            <label>Wake Time</label>
+                            <input type="time" id="waketime" value="06:00">
+                        </div>
+                        <button onclick="saveSchedule()">Save Schedule</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Screen Time Management</h3>
+                        <p style="margin-bottom: 10px;">Daily limit: <span id="screenLimit">4</span> hours</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="screenProgress" style="width: 80%"></div>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>Set Daily Screen Time Limit (hours)</label>
+                            <input type="number" id="screenLimitInput" min="1" max="12" value="4">
+                        </div>
+                        <button onclick="updateScreenLimit()">Update Limit</button>
+                    </div>
+                </div>
+
+                <!-- Reminders Tab -->
+                <div id="remindersTab" class="tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 15px; color: #333;">Sleep Reminders 🐱</h3>
+                    
+                    <div id="ageBasedReminders"></div>
+
+                    <div class="reminder-item active" id="bedtimeReminder">
+                        <div>
+                            <strong>🌙 Bedtime Reminder</strong>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">30 min before bed</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleReminder('bedtimeReminder')"></div>
+                    </div>
+
+                    <div class="reminder-item active" id="screenReminder">
+                        <div>
+                            <strong>📱 Screen Time Alert</strong>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">When limit reached</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleReminder('screenReminder')"></div>
+                    </div>
+
+                    <div class="reminder-item active" id="wakeReminder">
+                        <div>
+                            <strong>☀️ Wake Up Reminder</strong>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">Morning alarm</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleReminder('wakeReminder')"></div>
+                    </div>
+
+                    <div class="reminder-item active" id="winddownReminder">
+                        <div>
+                            <strong>🧸 Wind Down Time</strong>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">1 hour before bed</p>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleReminder('winddownReminder')"></div>
+                    </div>
+
+                    <div class="card" style="margin-top: 20px;">
+                        <h3>🐼 Consistency Streak</h3>
+                        <p>You've maintained your sleep schedule for <strong id="streak">5</strong> days straight! 🎉</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 71%"></div>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 12px;">2 more days to reach 7-day milestone</p>
+                    </div>
+                </div>
+
+                <!-- Rituals Tab -->
+                <div id="ritualsTab" class="tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 15px; color: #333;">Bedtime Rituals 🐻</h3>
+                    
+                    <div id="ageBasedRituals"></div>
+
+                    <div class="card">
+                        <h3>🛏️ Sleep Environment Optimizer</h3>
+                        <div class="form-group">
+                            <label>Room Temperature</label>
+                            <select id="roomTemp" onchange="updateEnvironment()">
+                                <option value="cool">Cool (60-67°F) - Optimal 🐼</option>
+                                <option value="moderate">Moderate (68-72°F)</option>
+                                <option value="warm">Warm (73-75°F)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lighting</label>
+                            <select id="lighting" onchange="updateEnvironment()">
+                                <option value="dark">Complete darkness 🌑</option>
+                                <option value="dimlight">Dim night light 🕯️</option>
+                                <option value="natural">Natural light only 🌅</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sound Environment</label>
+                            <select id="soundEnv" onchange="updateEnvironment()">
+                                <option value="silent">Complete silence 🤫</option>
+                                <option value="whitenoise">White noise 🌊</option>
+                                <option value="nature">Nature sounds 🦉</option>
+                                <option value="music">Soft music 🎵</option>
+                            </select>
+                        </div>
+                        <div id="environmentFeedback" class="alert success" style="display: none; margin-top: 15px;"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🐱 Your Bedtime Routine Checklist</h3>
+                        <div id="routineChecklist"></div>
+                        <button onclick="resetChecklist()">Reset Checklist</button>
+                    </div>
+                </div>
+
+                <!-- Wellness Tab -->
+                <div id="wellnessTab" class="tab-content" style="display: none;">
+                    <h3 style="margin-bottom: 15px; color: #333;">Mental Health & Sleep Tips 🐼</h3>
+                    
+                    <div class="card">
+                        <h3>🧘 Relaxation Techniques</h3>
+                        <p><strong>4-7-8 Breathing:</strong> Inhale for 4 seconds, hold for 7, exhale for 8. Repeat 3-4 times before bed.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🎵 Sleep Environment</h3>
+                        <p><strong>Optimize your bedroom:</strong> Keep it cool (60-67°F), dark, and quiet. Consider white noise or calming music.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>📱 Digital Detox</h3>
+                        <p><strong>Blue light reduction:</strong> Avoid screens 1-2 hours before bed. Use night mode on devices if necessary.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>☕ Caffeine Management</h3>
+                        <p><strong>Cut-off time:</strong> Avoid caffeine 6-8 hours before bedtime. Try herbal tea instead.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🏃 Physical Activity</h3>
+                        <p><strong>Exercise timing:</strong> Regular exercise improves sleep, but avoid vigorous workouts 3 hours before bed.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>💭 Stress Management</h3>
+                        <p><strong>Journal your thoughts:</strong> Spend 10 minutes writing down worries or tomorrow's tasks to clear your mind.</p>
+                    </div>
+
+                    <div class="alert">
+                        <strong>Need professional help?</strong> If sleep issues persist for more than 2 weeks, consider consulting a healthcare provider or sleep specialist.
+                    </div>
+
+                    <div class="form-group">
+                        <label>How are you feeling today?</label>
+                        <select id="moodTracker">
+                            <option>😊 Great - Well rested</option>
+                            <option>🙂 Good - Feeling okay</option>
+                            <option>😐 Neutral - Could be better</option>
+                            <option>😔 Tired - Need more sleep</option>
+                            <option>😫 Exhausted - Very poor sleep</option>
+                        </select>
+                    </div>
+                    <button onclick="saveMood()">Log Mood</button>
+                </div>
+
+                <button class="secondary-btn" onclick="logout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User data storage
+        let userData = {
+            name: '',
+            email: '',
+            ageGroup: 'adult',
+            sleepGoal: 8,
+            bedtime: '22:00',
+            waketime: '06:00',
+            screenLimit: 4,
+            reminders: {
+                bedtimeReminder: true,
+                screenReminder: true,
+                wakeReminder: true,
+                winddownReminder: true
+            },
+            streak: 5,
+            routineChecklist: []
+        };
+
+        // Age-based recommendations
+        const ageRecommendations = {
+            child: {
+                sleepHours: '9-12',
+                bedtime: '20:00',
+                waketime: '07:00',
+                screenLimit: 2,
+                rituals: [
+                    '📖 Read a bedtime story (20 minutes)',
+                    '🦷 Brush teeth and wash face',
+                    '🧸 Cuddle with favorite stuffed animal',
+                    '🌟 Look at glow-in-the-dark stars',
+                    '💭 Talk about favorite part of the day',
+                    '🎵 Listen to gentle lullabies'
+                ],
+                reminders: [
+                    { emoji: '🎮', text: 'Gaming Time Over', time: '30 min before bed' },
+                    { emoji: '🛁', text: 'Bath Time Reminder', time: '45 min before bed' }
+                ]
+            },
+            teen: {
+                sleepHours: '8-10',
+                bedtime: '22:00',
+                waketime: '06:30',
+                screenLimit: 3,
+                rituals: [
+                    '📱 Put phone on silent/away',
+                    '📓 Journal or write thoughts',
+                    '🎧 Listen to calming music/podcast',
+                    '🧘 Do light stretching or yoga',
+                    '📚 Read a book (non-school related)',
+                    '😌 Practice gratitude - list 3 good things'
+                ],
+                reminders: [
+                    { emoji: '📚', text: 'Homework Wrap-up', time: '1 hour before bed' },
+                    { emoji: '☕', text: 'No More Caffeine', time: '6 hours before bed' }
+                ]
+            },
+            adult: {
+                sleepHours: '7-9',
+                bedtime: '22:30',
+                waketime: '06:30',
+                screenLimit: 4,
+                rituals: [
+                    '📱 Digital detox - no screens',
+                    '🫖 Drink herbal tea (chamomile/lavender)',
+                    '📖 Read a physical book',
+                    '🧘 Meditation or breathing exercises',
+                    '✍️ Write in gratitude journal',
+                    '🛀 Take a warm bath or shower'
+                ],
+                reminders: [
+                    { emoji: '💼', text: 'Work Email Shutdown', time: '2 hours before bed' },
+                    { emoji: '🏋️', text: 'Exercise Complete', time: '3 hours before bed' }
+                ]
+            },
+            senior: {
+                sleepHours: '7-8',
+                bedtime: '21:30',
+                waketime: '06:00',
+                screenLimit: 3,
+                rituals: [
+                    '🚶 Take a gentle evening walk',
+                    '📻 Listen to relaxing radio or audiobook',
+                    '🧩 Do a calming puzzle or crossword',
+                    '🫖 Enjoy caffeine-free tea',
+                    '🧘 Gentle stretching exercises',
+                    '😌 Practice mindful breathing'
+                ],
+                reminders: [
+                    { emoji: '💊', text: 'Evening Medication', time: '1 hour before bed' },
+                    { emoji: '🌡️', text: 'Room Temperature Check', time: '30 min before bed' }
+                ]
+            }
+        };
+
+        // Show screen function
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Show tab function
+        function showTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+        }
+
+        // Login function
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const ageGroup = document.getElementById('loginAgeGroup').value;
+
+            if (email && password) {
+                // In a real app, this would validate against a backend
+                userData.email = email;
+                userData.ageGroup = ageGroup;
+                
+                // Apply age-based recommendations
+                const recommendations = ageRecommendations[ageGroup];
+                userData.bedtime = recommendations.bedtime;
+                userData.waketime = recommendations.waketime;
+                userData.screenLimit = recommendations.screenLimit;
+                userData.routineChecklist = recommendations.rituals.map((ritual, index) => ({
+                    id: index,
+                    text: ritual,
+                    completed: false
+                }));
+                
+                showScreen('dashboardScreen');
+                loadUserData();
+                loadAgeBasedContent();
+            } else {
+                alert('Please enter both email and password');
+            }
+        }
+
+        // Signup function
+        function signup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const ageGroup = document.getElementById('ageGroup').value;
+            const sleepGoal = document.getElementById('sleepGoal').value;
+
+            if (name && email && password) {
+                userData.name = name;
+                userData.email = email;
+                userData.ageGroup = ageGroup;
+                userData.sleepGoal = parseInt(sleepGoal);
+                
+                // Apply age-based recommendations
+                const recommendations = ageRecommendations[ageGroup];
+                userData.bedtime = recommendations.bedtime;
+                userData.waketime = recommendations.waketime;
+                userData.screenLimit = recommendations.screenLimit;
+                userData.routineChecklist = recommendations.rituals.map((ritual, index) => ({
+                    id: index,
+                    text: ritual,
+                    completed: false
+                }));
+                
+                // Show success message
+                showScreen('dashboardScreen');
+                loadUserData();
+                loadAgeBasedContent();
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        // Load age-based content
+        function loadAgeBasedContent() {
+            const recommendations = ageRecommendations[userData.ageGroup];
+            
+            // Load age-based reminders
+            const remindersContainer = document.getElementById('ageBasedReminders');
+            remindersContainer.innerHTML = recommendations.reminders.map((reminder, index) => `
+                <div class="card" style="margin-bottom: 15px;">
+                    <h3>${reminder.emoji} ${reminder.text}</h3>
+                    <p>${reminder.time}</p>
+                </div>
+            `).join('');
+            
+            // Load age-based rituals
+            const ritualsContainer = document.getElementById('ageBasedRituals');
+            ritualsContainer.innerHTML = `
+                <div class="card">
+                    <h3>Recommended for Your Age Group</h3>
+                    <p><strong>Sleep Duration:</strong> ${recommendations.sleepHours} hours</p>
+                    <p><strong>Recommended Bedtime:</strong> ${recommendations.bedtime}</p>
+                    <p><strong>Screen Time Limit:</strong> ${recommendations.screenLimit} hours/day</p>
+                </div>
+            `;
+            
+            // Load routine checklist
+            loadRoutineChecklist();
+        }
+
+        // Load routine checklist
+        function loadRoutineChecklist() {
+            const checklistContainer = document.getElementById('routineChecklist');
+            if (userData.routineChecklist.length === 0) {
+                const recommendations = ageRecommendations[userData.ageGroup];
+                userData.routineChecklist = recommendations.rituals.map((ritual, index) => ({
+                    id: index,
+                    text: ritual,
+                    completed: false
+                }));
+            }
+            
+            checklistContainer.innerHTML = userData.routineChecklist.map(item => `
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #e0e0e0;">
+                    <input type="checkbox" 
+                           id="ritual-${item.id}" 
+                           ${item.completed ? 'checked' : ''} 
+                           onchange="toggleRitual(${item.id})"
+                           style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                    <label for="ritual-${item.id}" 
+                           style="cursor: pointer; ${item.completed ? 'text-decoration: line-through; color: #999;' : ''}">${item.text}</label>
+                </div>
+            `).join('');
+        }
+
+        // Toggle ritual completion
+        function toggleRitual(id) {
+            const ritual = userData.routineChecklist.find(r => r.id === id);
+            if (ritual) {
+                ritual.completed = !ritual.completed;
+                loadRoutineChecklist();
+                
+                // Check if all rituals completed
+                const allCompleted = userData.routineChecklist.every(r => r.completed);
+                if (allCompleted) {
+                    alert('🎉 Great job! You completed your entire bedtime routine! Sweet dreams! 🐻🐼🐱');
+                }
+            }
+        }
+
+        // Reset checklist
+        function resetChecklist() {
+            userData.routineChecklist.forEach(ritual => ritual.completed = false);
+            loadRoutineChecklist();
+            alert('Checklist reset! Ready for tonight\'s routine 🌙');
+        }
+
+        // Update environment
+        function updateEnvironment() {
+            const temp = document.getElementById('roomTemp').value;
+            const light = document.getElementById('lighting').value;
+            const sound = document.getElementById('soundEnv').value;
+            
+            const feedback = document.getElementById('environmentFeedback');
+            feedback.style.display = 'block';
+            
+            let message = '🐼 Environment Status: ';
+            let tips = [];
+            
+            if (temp === 'cool') {
+                tips.push('✅ Perfect temperature for sleep!');
+            } else {
+                tips.push('💡 Consider cooling down to 60-67°F for optimal sleep');
+            }
+            
+            if (light === 'dark') {
+                tips.push('✅ Great darkness level!');
+            } else {
+                tips.push('💡 Complete darkness promotes better melatonin production');
+            }
+            
+            if (sound === 'silent' || sound === 'whitenoise') {
+                tips.push('✅ Good sound environment!');
+            }
+            
+            feedback.innerHTML = tips.join('<br>');
+        }
+        function loadUserData() {
+            document.getElementById('bedtime').value = userData.bedtime;
+            document.getElementById('waketime').value = userData.waketime;
+            document.getElementById('screenLimitInput').value = userData.screenLimit;
+            document.getElementById('screenLimit').textContent = userData.screenLimit;
+            document.getElementById('streak').textContent = userData.streak;
+        }
+
+        // Save schedule
+        function saveSchedule() {
+            userData.bedtime = document.getElementById('bedtime').value;
+            userData.waketime = document.getElementById('waketime').value;
+            
+            const bedtimeParts = userData.bedtime.split(':');
+            const waketimeParts = userData.waketime.split(':');
+            
+            const bedtimeMinutes = parseInt(bedtimeParts[0]) * 60 + parseInt(bedtimeParts[1]);
+            const waketimeMinutes = parseInt(waketimeParts[0]) * 60 + parseInt(waketimeParts[1]);
+            
+            let sleepMinutes = waketimeMinutes - bedtimeMinutes;
+            if (sleepMinutes < 0) sleepMinutes += 24 * 60;
+            
+            const sleepHours = (sleepMinutes / 60).toFixed(1);
+            document.getElementById('avgSleep').textContent = sleepHours;
+            
+            alert('Sleep schedule saved! We\'ll remind you 30 minutes before bedtime.');
+        }
+
+        // Update screen limit
+        function updateScreenLimit() {
+            const limit = parseInt(document.getElementById('screenLimitInput').value);
+            userData.screenLimit = limit;
+            document.getElementById('screenLimit').textContent = limit;
+            alert('Screen time limit updated to ' + limit + ' hours');
+        }
+
+        // Toggle reminder
+        function toggleReminder(reminderId) {
+            const reminderItem = document.getElementById(reminderId);
+            const toggle = reminderItem.querySelector('.toggle-switch');
+            
+            toggle.classList.toggle('active');
+            reminderItem.classList.toggle('active');
+            
+            userData.reminders[reminderId] = toggle.classList.contains('active');
+        }
+
+        // Save mood
+        function saveMood() {
+            const mood = document.getElementById('moodTracker').value;
+            alert('Mood logged! Keep tracking to identify patterns in your sleep quality.');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                showScreen('loginScreen');
+            }
+        }
+
+        // Simulate screen time tracking (would be actual device tracking in real app)
+        setInterval(() => {
+            const current = parseFloat(document.getElementById('screenTime').textContent);
+            if (current < 5) {
+                document.getElementById('screenTime').textContent = (current + 0.1).toFixed(1);
+                const percentage = (current / userData.screenLimit) * 100;
+                document.getElementById('screenProgress').style.width = Math.min(percentage, 100) + '%';
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
